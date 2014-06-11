@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<sdf version='1.4'>
+<model name="sjtu_drone">
+   <!-- model plugins should be put in the front of the sensor plugins! 
+	This might be a bug~
+	-->
+   <plugin name='simple_drone' filename='libplugin_drone.so'>
+        <bodyName>base_link</bodyName>
+        <stateTopic>ground_truth/state</stateTopic>
+        <imuTopic>ardrone/imu</imuTopic>
+        <rollpitchProportionalGain>10.0</rollpitchProportionalGain>
+        <rollpitchDifferentialGain>5.0</rollpitchDifferentialGain>
+        <rollpitchLimit>0.5</rollpitchLimit>
+        <yawProportionalGain>2.0</yawProportionalGain>
+        <yawDifferentialGain>1.0</yawDifferentialGain>
+        <yawLimit>1.5</yawLimit>
+        <velocityXYProportionalGain>5.0</velocityXYProportionalGain>
+        <velocityXYDifferentialGain>1.0</velocityXYDifferentialGain>
+        <velocityXYLimit>2</velocityXYLimit>
+        <velocityZProportionalGain>5.0</velocityZProportionalGain>
+        <velocityZDifferentialGain>1.0</velocityZDifferentialGain>
+        <velocityZLimit>0.5</velocityZLimit>
+        <positionXYProportionalGain>1.1</positionXYProportionalGain>
+        <positionXYDifferentialGain>0.0</positionXYDifferentialGain>
+        <positionXYIntegralGain>0.0</positionXYIntegralGain>
+        <positionXYLimit>5</positionXYLimit>
+        <positionZProportionalGain>1.0</positionZProportionalGain>
+        <positionZDifferentialGain>0.2</positionZDifferentialGain>
+        <positionZLimit>0.5</positionZLimit>
+        <maxForce>30</maxForce>
+        <motionSmallNoise>0.05</motionSmallNoise>
+        <motionDriftNoise>0.03</motionDriftNoise>
+        <motionDriftNoiseTime>5.0</motionDriftNoiseTime>
+    </plugin>
+
+    <plugin name='ardrone_imu' filename='libplugin_ros_imu.so'>
+	<alwaysOn>true</alwaysOn>
+	<updateRate>100.0</updateRate>
+	<bodyName>base_link</bodyName>
+	<frameId>ardrone_base_link</frameId>
+	<topicName>/ardrone/imu</topicName>
+	<rpyOffsets>0 0 0</rpyOffsets> 
+	<gaussianNoise>0</gaussianNoise> 
+
+	<accelDrift>0.5 0.5 0.5</accelDrift>
+	<accelOffset>0 0 0</accelOffset>
+
+	<accelGaussianNoise>0.35 0.35 0.3</accelGaussianNoise>
+
+	<rateDrift>0.0 0.0 0.0</rateDrift>
+	<rateOffset>0 0 0</rateOffset>
+
+	<rateGaussianNoise>0.00 0.00 0.00</rateGaussianNoise>
+
+	<headingDrift>0.0</headingDrift>
+	<headingOffset>0.0</headingOffset>
+
+	<headingGaussianNoise>0.00</headingGaussianNoise>
+    </plugin>
+
+     <!-- pose of the quadrotor in the world frame -->
+     <pose>0 0 0.04 0 0 0</pose>
+      <link name="base_link">
+      <inertial>
+        <mass>1.477</mass>
+	<pose>0 0 0 0 0 0</pose>
+	<inertia>
+	<ixx>0.01152</ixx>
+	<ixy>0</ixy>
+	<ixz>0</ixz>
+	<iyy>0.01152</iyy>
+	<iyz>0</iyz>
+	<izz>0.0218</izz>
+	</inertia>
+      </inertial>
+
+      <visual name="visual">
+        <geometry>
+	  <mesh><uri>file://quadrotor_4.dae</uri></mesh>
+        </geometry>
+      </visual>
+
+      <collision name="collision">
+        <geometry>
+	<mesh><uri>file://quadrotor_4.dae</uri></mesh>
+        </geometry>
+      </collision>
+
+      <gravity>1</gravity>
+
+      <!-- video camera in 15 fps-->
+	<sensor name="mono_camera" type="camera">
+	<always_on> 1 </always_on>
+	<update_rate> 15 </update_rate>
+	<visualize> true </visualize>
+	<pose> 0 0 0 0 0 0 </pose>
+	<plugin name='ros_camera' filename='libplugin_ros_cam.so'>
+	</plugin> 
+	<camera name='mono_camera'>
+	 	<pose> 0 0 0 0 0 0 </pose>
+		<horizontal_fov>1.607</horizontal_fov>
+		<image>
+			<width>640</width>
+			<height>360</width>
+			<format>R8G8B8</format>
+		</image>
+	</camera>
+      </sensor>
+     </link> 
+</model>
+</sdf>

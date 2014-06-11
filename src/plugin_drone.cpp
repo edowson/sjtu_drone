@@ -1,0 +1,432 @@
+#include "plugin_drone.h"
+
+
+#include <cmath>
+#include <stdlib.h>
+#include <iostream>
+
+
+namespace gazebo {
+
+ARDroneSimpleController::ARDroneSimpleController()
+{ 
+  navi_state = LANDED_MODEL;
+  m_posCtrl = false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Destructor
+ARDroneSimpleController::~ARDroneSimpleController()
+{
+  event::Events::DisconnectWorldUpdateBegin(updateConnection);
+
+  node_handle_->shutdown();
+  delete node_handle_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Load the controller
+void ARDroneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
+{
+  std::cout << "The drone plugin is loading!" << std::endl;
+  world = _model->GetWorld();
+
+  if(!ros::isInitialized()){
+      ROS_FATAL_STREAM("A ROS node for Gazebo has not been initialized, unable to load plugin. "
+        << "Load the Gazebo system plugin 'libgazebo_ros_init.so' in the gazebo_ros package)");
+  }
+  
+  //load parameters
+  cmd_normal_topic_ = "ardrone/cmd_val";
+  takeoff_topic_ = "ardrone/takeoff";
+  land_topic_ = "ardrone/land";
+  reset_topic_ = "ardrone/reset";
+  posctrl_topic_ = "ardrone/posctrl";
+  
+  if (!_sdf->HasElement("imuTopic"))
+    imu_topic_.clear();
+  else
+    imu_topic_ = _sdf->GetElement("imuTopic")->Get<std::string>();
+  
+  
+  if (!_sdf->HasElement("bodyName"))
+  {
+    link = _model->GetLink();
+    link_name_ = link->GetName();
+  }
+  else {
+    link_name_ = _sdf->GetElement("bodyName")->Get<std::string>();
+    link = boost::shared_dynamic_cast<physics::Link>(world->GetEntity(link_name_));
+  }
+
+  if (!link)
+  {
+    ROS_FATAL("gazebo_ros_baro plugin error: bodyName: %s does not exist\n", link_name_.c_str());
+    return;
+  }
+
+  if (!_sdf->HasElement("maxForce"))
+    max_force_ = -1;
+  else
+    max_force_ = _sdf->GetElement("maxForce")->Get<double>();
+
+
+  if (!_sdf->HasElement("motionSmallNoise"))
+    motion_small_noise_ = 0;
+  else
+    motion_small_noise_ = _sdf->GetElement("motionSmallNoise")->Get<double>();
+
+  if (!_sdf->HasElement("motionDriftNoise"))
+    motion_drift_noise_ = 0;
+  else
+    motion_drift_noise_ = _sdf->GetElement("motionDriftNoise")->Get<double>();
+
+  if (!_sdf->HasElement("motionDriftNoiseTime"))
+    motion_drift_noise_time_ = 1.0;
+  else
+    motion_drift_noise_time_ = _sdf->GetElement("motionDriftNoiseTime")->Get<double>();
+
+
+  // get inertia and mass of quadrotor body
+  inertia = link->GetInertial()->GetPrincipalMoments();
+  mass = link->GetInertial()->GetMass();
+
+  node_handle_ = new ros::NodeHandle;
+  
+
+  // subscribe command: control command
+  if (!cmd_normal_topic_.empty())
+  {
+    ros::SubscribeOptions ops = ros::SubscribeOptions::create<geometry_msgs::Twist>(
+      cmd_normal_topic_, 1,
+      boost::bind(&ARDroneSimpleController::CmdCallback, this, _1),
+      ros::VoidPtr(), &callback_queue_);
+    cmd_subscriber_ = node_handle_->subscribe(ops);
+    
+    if( cmd_subscriber_.getTopic() != "")
+        ROS_INFO_NAMED("quadrotor_simple_controller", "Using cmd_topic %s.", cmd_normal_topic_.c_str());
+    else
+        ROS_INFO("cannot find the command topic!");
+  }
+  
+  if (!posctrl_topic_.empty())
+  {
+    ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Bool>(
+      posctrl_topic_, 1,
+      boost::bind(&ARDroneSimpleController::PosCtrlCallback, this, _1),
+      ros::VoidPtr(), &callback_queue_);
+    posctrl_subscriber_ = node_handle_->subscribe(ops);
+    
+    if( posctrl_subscriber_.getTopic() != "")
+        ROS_INFO("find the position control topic!");
+    else
+        ROS_INFO("cannot find the position control topic!");
+  }
+  
+
+  // subscribe imu
+  if (!imu_topic_.empty())
+  {
+    ros::SubscribeOptions ops = ros::SubscribeOptions::create<sensor_msgs::Imu>(
+      imu_topic_, 1,
+      boost::bind(&ARDroneSimpleController::ImuCallback, this, _1),
+      ros::VoidPtr(), &callback_queue_);
+    imu_subscriber_ = node_handle_->subscribe(ops);
+    
+    if(imu_subscriber_.getTopic() !="")
+        ROS_INFO_NAMED("quadrotor_simple_controller", "Using imu information on topic %s as source of orientation and angular velocity.", imu_topic_.c_str());
+    else
+        ROS_INFO("cannot find the IMU topic!");
+  }
+
+  // subscribe command: take off command
+  if (!takeoff_topic_.empty())
+  {
+    ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Empty>(
+      takeoff_topic_, 1,
+      boost::bind(&ARDroneSimpleController::TakeoffCallback, this, _1),
+      ros::VoidPtr(), &callback_queue_);
+    takeoff_subscriber_ = node_handle_->subscribe(ops);
+    if( takeoff_subscriber_.getTopic() != "")
+        ROS_INFO("find the takeoff topic");
+    else
+        ROS_INFO("cannot find the takeoff topic!");
+  }
+
+  // subscribe command: land command
+  if (!land_topic_.empty())
+  {
+    ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Empty>(
+      land_topic_, 1,
+      boost::bind(&ARDroneSimpleController::LandCallback, this, _1),
+      ros::VoidPtr(), &callback_queue_);
+    land_subscriber_ = node_handle_->subscribe(ops);
+  }
+
+  // subscribe command: reset command
+  if (!reset_topic_.empty())
+  {
+    ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Empty>(
+      reset_topic_, 1,
+      boost::bind(&ARDroneSimpleController::ResetCallback, this, _1),
+      ros::VoidPtr(), &callback_queue_);
+    reset_subscriber_ = node_handle_->subscribe(ops);
+  }
+
+  LoadControllerSettings(_model, _sdf);
+  
+  Reset();
+
+  // New Mechanism for Updating every World Cycle
+  // Listen to the update event. This event is broadcast every
+  // simulation iteration.
+  updateConnection = event::Events::ConnectWorldUpdateBegin(
+      boost::bind(&ARDroneSimpleController::Update, this));
+}
+
+void ARDroneSimpleController::LoadControllerSettings(physics::ModelPtr _model, sdf::ElementPtr _sdf){
+    controllers_.roll.Load(_sdf, "rollpitch");
+    controllers_.pitch.Load(_sdf, "rollpitch");
+    controllers_.yaw.Load(_sdf, "yaw");
+    controllers_.velocity_x.Load(_sdf, "velocityXY");
+    controllers_.velocity_y.Load(_sdf, "velocityXY");
+    controllers_.velocity_z.Load(_sdf, "velocityZ");
+    
+    controllers_.pos_x.Load(_sdf, "positionXY");
+    controllers_.pos_y.Load(_sdf, "positionXY");
+    controllers_.pos_z.Load(_sdf, "positionZ");
+    
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Callbacks
+void ARDroneSimpleController::CmdCallback(const geometry_msgs::TwistConstPtr& cmd)
+{
+  cmd_val = *cmd;
+
+
+  static common::Time last_sim_time = world->GetSimTime();
+  static double time_counter_for_drift_noise = 0;
+  static double drift_noise[4] = {0.0, 0.0, 0.0, 0.0};
+  // Get simulator time
+  common::Time cur_sim_time = world->GetSimTime();
+  double dt = (cur_sim_time - last_sim_time).Double();
+  // save last time stamp
+  last_sim_time = cur_sim_time;
+
+  // generate noise
+  if(time_counter_for_drift_noise > motion_drift_noise_time_)
+  {
+    drift_noise[0] = 2*motion_drift_noise_*(drand48()-0.5);
+    drift_noise[1] = 2*motion_drift_noise_*(drand48()-0.5);
+    drift_noise[2] = 2*motion_drift_noise_*(drand48()-0.5);
+    drift_noise[3] = 2*motion_drift_noise_*(drand48()-0.5);
+    time_counter_for_drift_noise = 0.0;
+  }
+  time_counter_for_drift_noise += dt;
+
+  cmd_val.angular.x += drift_noise[0] + 2*motion_small_noise_*(drand48()-0.5);
+  cmd_val.angular.y += drift_noise[1] + 2*motion_small_noise_*(drand48()-0.5);
+  cmd_val.angular.z += drift_noise[3] + 2*motion_small_noise_*(drand48()-0.5);
+  cmd_val.linear.z += drift_noise[2] + 2*motion_small_noise_*(drand48()-0.5);
+
+}
+
+void ARDroneSimpleController::PosCtrlCallback(const std_msgs::BoolConstPtr& cmd){
+    m_posCtrl = cmd->data;
+}
+
+void ARDroneSimpleController::ImuCallback(const sensor_msgs::ImuConstPtr& imu)
+{
+  //directly read the quternion from the IMU data
+  pose.rot.Set(imu->orientation.w, imu->orientation.x, imu->orientation.y, imu->orientation.z);
+  euler = pose.rot.GetAsEuler();
+  angular_velocity = pose.rot.RotateVector(math::Vector3(imu->angular_velocity.x, imu->angular_velocity.y, imu->angular_velocity.z));
+}
+
+void ARDroneSimpleController::TakeoffCallback(const std_msgs::EmptyConstPtr& msg)
+{
+  if(navi_state == LANDED_MODEL)
+  {
+    navi_state = TAKINGOFF_MODEL;
+    m_timeAfterCmd = 0;
+    ROS_INFO("%s","\nQuadrotor takes off!!");
+  }
+}
+
+void ARDroneSimpleController::LandCallback(const std_msgs::EmptyConstPtr& msg)
+{
+  if(navi_state == FLYING_MODEL||navi_state == TAKINGOFF_MODEL)
+  {
+    navi_state = LANDING_MODEL;
+    m_timeAfterCmd = 0;
+    ROS_INFO("%s","\nQuadrotor lands!!");
+  }
+
+}
+
+void ARDroneSimpleController::ResetCallback(const std_msgs::EmptyConstPtr& msg)
+{
+  ROS_INFO("%s","\nReset quadrotor!!");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Update the controller
+void ARDroneSimpleController::Update()
+{
+    
+    // Get new commands/state
+    callback_queue_.callAvailable();
+  
+    // Get simulator time
+    common::Time sim_time = world->GetSimTime();
+    double dt = (sim_time - last_time).Double();
+    if (dt == 0.0) return;
+    
+    UpdateState(dt);
+    UpdateDynamics(dt);
+    
+    // save last time stamp
+    last_time = sim_time;   
+}
+
+void ARDroneSimpleController::UpdateState(double dt){
+    if(navi_state == TAKINGOFF_MODEL){
+        m_timeAfterCmd += dt;
+        if (m_timeAfterCmd > 0.5){
+            navi_state = FLYING_MODEL;
+            std::cout << "Entering flying model!" << std::endl;
+        }
+    }else if(navi_state == LANDING_MODEL){
+        m_timeAfterCmd += dt;
+        if(m_timeAfterCmd > 1.0){
+            navi_state = LANDED_MODEL;
+            std::cout << "Landed!" <<std::endl;
+        }
+    }else
+        m_timeAfterCmd = 0;
+}
+
+
+void ARDroneSimpleController::UpdateDynamics(double dt){
+    math::Vector3 force, torque;
+   
+    // Get Pose/Orientation from Gazebo (if no state subscriber is active)
+  //  if (imu_subscriber_.getTopic()=="")
+    {
+      pose = link->GetWorldPose();
+      angular_velocity = link->GetWorldAngularVel();
+      euler = pose.rot.GetAsEuler();
+    }
+   // if (state_topic_.empty())
+    {
+      acceleration = (link->GetWorldLinearVel() - velocity) / dt;
+      velocity = link->GetWorldLinearVel();
+    }
+    
+    math::Vector3 poschange = pose.pos - position;
+    position = pose.pos;
+    
+  
+    // Get gravity
+    math::Vector3 gravity_body = pose.rot.RotateVector(world->GetPhysicsEngine()->GetGravity());
+    double gravity = gravity_body.GetLength();
+    double load_factor = gravity * gravity / world->GetPhysicsEngine()->GetGravity().Dot(gravity_body);  // Get gravity
+  
+    // Rotate vectors to coordinate frames relevant for control
+    math::Quaternion heading_quaternion(cos(euler.z/2),0,0,sin(euler.z/2));
+    math::Vector3 velocity_xy = heading_quaternion.RotateVectorReverse(velocity);
+    math::Vector3 acceleration_xy = heading_quaternion.RotateVectorReverse(acceleration);
+    math::Vector3 angular_velocity_body = pose.rot.RotateVectorReverse(angular_velocity);
+  
+    // update controllers
+    force.Set(0.0, 0.0, 0.0);
+    torque.Set(0.0, 0.0, 0.0);
+    
+    if( m_posCtrl){
+        //position control
+        if(navi_state == FLYING_MODEL){
+            double vx = controllers_.pos_x.update(cmd_val.linear.x, position.x, poschange.x, dt);
+            double vy = controllers_.pos_y.update(cmd_val.linear.y, position.y, poschange.y, dt);
+            double vz = controllers_.pos_z.update(cmd_val.linear.z, position.z, poschange.z, dt);
+            
+            math::Vector3 vb = heading_quaternion.RotateVectorReverse(math::Vector3(vx,vy,vz));
+            
+            double pitch_command =  controllers_.velocity_x.update(vb.x, velocity_xy.x, acceleration_xy.x, dt) / gravity;
+            double roll_command  = -controllers_.velocity_y.update(vb.y, velocity_xy.y, acceleration_xy.y, dt) / gravity;
+            torque.x = inertia.x *  controllers_.roll.update(roll_command, euler.x, angular_velocity_body.x, dt);
+            torque.y = inertia.y *  controllers_.pitch.update(pitch_command, euler.y, angular_velocity_body.y, dt);            
+            force.z  = mass      * (controllers_.velocity_z.update(vz,  velocity.z, acceleration.z, dt) + load_factor * gravity);
+        }
+    }else{
+        //normal control
+        if( navi_state == FLYING_MODEL && cmd_val.linear.x < EPS && cmd_val.linear.y < EPS)
+        {
+          //hovering
+          double pitch_command =  controllers_.velocity_x.update(cmd_val.linear.x, velocity_xy.x, acceleration_xy.x, dt) / gravity;
+          double roll_command  = -controllers_.velocity_y.update(cmd_val.linear.y, velocity_xy.y, acceleration_xy.y, dt) / gravity;
+          torque.x = inertia.x *  controllers_.roll.update(roll_command, euler.x, angular_velocity_body.x, dt);
+          torque.y = inertia.y *  controllers_.pitch.update(pitch_command, euler.y, angular_velocity_body.y, dt);
+        }else{
+          torque.x = inertia.x *  controllers_.roll.update(cmd_val.angular.x, euler.x, angular_velocity_body.x, dt);
+          torque.y = inertia.y *  controllers_.pitch.update(cmd_val.angular.y, euler.y, angular_velocity_body.y, dt);
+        }
+        torque.z = inertia.z *  controllers_.yaw.update(cmd_val.angular.z, angular_velocity.z, 0, dt);
+        force.z  = mass      * (controllers_.velocity_z.update(cmd_val.linear.z,  velocity.z, acceleration.z, dt) + load_factor * gravity);
+    }
+
+    
+    if (max_force_ > 0.0 && force.z > max_force_) force.z = max_force_;
+    if (force.z < 0.0) force.z = 0.0;
+    
+    
+  
+    // process robot state information
+    if(navi_state == LANDED_MODEL)
+    {
+  
+    }
+    else if(navi_state == FLYING_MODEL)
+    {
+      link->AddRelativeForce(force);
+      link->AddRelativeTorque(torque);
+    }
+    else if(navi_state == TAKINGOFF_MODEL)
+    {
+      link->AddRelativeForce(force*1.5);
+      link->AddRelativeTorque(torque*1.5);
+    }
+    else if(navi_state == LANDING_MODEL)
+    {
+      link->AddRelativeForce(force*0.8);
+      link->AddRelativeTorque(torque*0.8);
+    }
+   
+}
+////////////////////////////////////////////////////////////////////////////////
+// Reset the controller
+void ARDroneSimpleController::Reset()
+{
+  controllers_.roll.reset();
+  controllers_.pitch.reset();
+  controllers_.yaw.reset();
+  controllers_.velocity_x.reset();
+  controllers_.velocity_y.reset();
+  controllers_.velocity_z.reset();
+
+  link->SetForce(math::Vector3(0,0,0));
+  link->SetTorque(math::Vector3(0,0,0));
+
+  // reset state
+  pose.Reset();
+  velocity.Set();
+  angular_velocity.Set();
+  acceleration.Set();
+  euler.Set();
+  state_stamp = ros::Time();
+}
+
+// Register this plugin with the simulator
+GZ_REGISTER_MODEL_PLUGIN(ARDroneSimpleController)
+
+} // namespace gazebo

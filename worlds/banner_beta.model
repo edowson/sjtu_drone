@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sdf version="1.4">
+  <model name="banner_beta">
+    <pose>0 0 0 0 0 0</pose>
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <filename>file://../meshes/marker/beta.dae</filename>
+            <scale>1.0 1.0 1.0</scale>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <static>true</static>
+  </model>
+</sdf>
