@@ -368,7 +368,7 @@ void ARDroneSimpleController::UpdateDynamics(double dt){
             double vx = controllers_.pos_x.update(cmd_val.linear.x, position.x, poschange.x, dt);
             double vy = controllers_.pos_y.update(cmd_val.linear.y, position.y, poschange.y, dt);
             double vz = controllers_.pos_z.update(cmd_val.linear.z, position.z, poschange.z, dt);
-            
+
             math::Vector3 vb = heading_quaternion.RotateVectorReverse(math::Vector3(vx,vy,vz));
             
             double pitch_command =  controllers_.velocity_x.update(vb.x, velocity_xy.x, acceleration_xy.x, dt) / gravity;

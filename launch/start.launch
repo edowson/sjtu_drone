@@ -18,7 +18,7 @@
   <node name="gazebo" pkg="sjtu_drone" type="start_gzserver" args="$(arg world_name)" respawn="false"/>
 
   <!-- start gzclient -->
-  <node name="gui" pkg="sjtu_drone" type="start_gzgui" args="$(arg world_name)" respawn="false"/>
+  <node name="gui" pkg="sjtu_drone" type="start_gui" args="$(arg world_name)" respawn="false"/>
 	
   <!-- Spawn simulated quadrotor uav -->
   <node name="spawn_model" pkg="sjtu_drone" type="spawn_model" respawn="false"/>

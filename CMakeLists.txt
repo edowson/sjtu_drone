@@ -135,7 +135,9 @@ set_target_properties( plugin_ros_cam
 set(CMAKE_AUTOMOC ON)
 
 #find the QtWidgets library
-find_package(Qt5Widgets)
+find_package(Qt5Widgets REQUIRED)
+MESSAGE( STATUS "QT5: " ${Qt5Widgets_INCLUDE_DIRS} )
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
 add_executable( drone_keyboard
     src/drone_keyboard.cpp
@@ -148,6 +150,7 @@ qt5_use_modules(drone_keyboard Widgets)
 target_link_libraries( drone_keyboard
     ${catkin_LIBRARIES}
     ${OpenCV_LIBRARIES}
+    Qt5::Widgets
 )
 
 set_target_properties( drone_keyboard

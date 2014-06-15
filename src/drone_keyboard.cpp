@@ -96,21 +96,18 @@ public:
         }
         else{
             ardrone->posCtrl(true);
-            ardrone->moveTo(0,0,25);
+            std::cout << "(0.5,-1.5,6)" << std::endl;
+            ardrone->moveTo(0.5,-1.5,2);
             sleep(5);
-            std::cout << "(0,0,25)" << std::endl;
-            ardrone->moveTo(5,0,25);
+            ardrone->moveTo(0.5,1.5,2);
             sleep(5);
-            std::cout << "(5,0,25)" << std::endl;
-            ardrone->moveTo(5,5,25);
+            ardrone->moveTo(-3,1.5,2);
             sleep(5);
-            std::cout << "(5,5,25)" << std::endl;
-            ardrone->moveTo(0,5,25);
+            ardrone->moveTo(-3,-1.5,2);
             sleep(5);
-            std::cout << "(0,5,25)" << std::endl;
-            ardrone->moveTo(0,0,25);
+            ardrone->moveTo(0.5,-1.5,2);
             sleep(5);
-            std::cout << "(0,0,25)" << std::endl;
+
         }
     }    
 };
