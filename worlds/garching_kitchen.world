@@ -68,7 +68,7 @@
           <geometry>
             <mesh>
               <uri>file://meshes/garching_kitchen.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>2 2 2</scale>
             </mesh>
           </geometry>
         </collision>
@@ -76,7 +76,7 @@
           <geometry>
             <mesh>
               <uri>file://meshes/garching_kitchen.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>2 2 2</scale>
             </mesh>
           </geometry>
           <cast_shadows>false</cast_shadows>
@@ -84,7 +84,7 @@
       </link>
       <static>true</static>
     </model>
-    <model name="grass_ground">
+<!--    <model name="grass_ground">
       <link name="grass_ground_link">
         <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
         <visual name="grass_ground">
@@ -98,6 +98,6 @@
         </visual>
       </link>
       <static>true</static>
-    </model>
+    </model> -->
   </world>
 </sdf>
