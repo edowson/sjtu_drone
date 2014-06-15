@@ -1,7 +1,6 @@
 #include "drone_object_ros.h"
 #include <iostream>
 #include <QtWidgets>
-#include <QApplication>
 
 
 class KeyboardWnd:public QWidget{

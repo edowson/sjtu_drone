@@ -69,7 +69,7 @@
         <collision name="3boxes_room_collision">
           <geometry>
             <mesh>
-              <uri>file://../meshes/indoor_slope_walls.dae</uri>
+              <uri>file://meshes/indoor_slope.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -77,7 +77,7 @@
         <visual name="3boxes_room">
           <geometry>
             <mesh>
-              <uri>file://../meshes/indoor_slope_walls.dae</uri>
+              <uri>file://meshes/indoor_slope.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>

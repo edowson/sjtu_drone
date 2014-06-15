@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <world name="default">
+    <scene>
+      <ambient>0.5 0.5 0.5 1</ambient>
+      <background>0.5 0.5 0.5 1</background>
+      <shadows>false</shadows>
+    </scene>
+    <include>
+        <uri>model://ground_plane</uri>
+    </include>
+    <include>
+        <uri>model://sun</uri>
+    </include>
+    <model name="my_mesh">
+       <pose>0 0 0  0 0 0</pose>
+      <static>true</static>
+      <link name="body">
+        <visual name="visual">
+          <cast_shadows> 0 </cast_shadows>
+          <geometry>
+            <mesh><uri>file://meshes/Sin.dae</uri></mesh>
+          </geometry>
+        </visual>
+       <collision name="collsion">
+          <geometry>
+            <mesh><uri>file://meshes/Sin.dae</uri></mesh>
+          </geometry>
+        </collsion>
+      </link>
+    </model>
+  </world>
+</sdf>

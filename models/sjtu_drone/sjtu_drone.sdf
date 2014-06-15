@@ -76,13 +76,13 @@
 
       <visual name="visual">
         <geometry>
-	  <mesh><uri>file://quadrotor_4.dae</uri></mesh>
+	  <mesh><uri>file://models/sjtu_drone/quadrotor_4.dae</uri></mesh>
         </geometry>
       </visual>
 
       <collision name="collision">
         <geometry>
-	<mesh><uri>file://quadrotor_4.dae</uri></mesh>
+	<mesh><uri>file://models/sjtu_drone/quadrotor_4.dae</uri></mesh>
         </geometry>
       </collision>
 
@@ -93,7 +93,7 @@
 	<always_on> 1 </always_on>
 	<update_rate> 15 </update_rate>
 	<visualize> true </visualize>
-	<pose> 0 0 0 0 0 0 </pose>
+	<pose> 0.2 0 0 0 0 0 </pose>
 	<plugin name='ros_camera' filename='libplugin_ros_cam.so'>
 	</plugin> 
 	<camera name='mono_camera'>

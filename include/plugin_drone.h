@@ -9,11 +9,13 @@
 #include <ros/ros.h>
 
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Pose.h>
+
 #include <sensor_msgs/Imu.h>
+
 #include <std_msgs/Empty.h>
 #include <std_msgs/Bool.h>
 #include <nav_msgs/Odometry.h>
-#include <ardrone_autonomy/Navdata.h>
 
 #include "pid_controller.h"
 
@@ -63,6 +65,8 @@ private:
   ros::Subscriber land_subscriber_;
   ros::Subscriber reset_subscriber_;
   
+  ros::Publisher pub_gt_;   //for publishing ground truth
+  
 
 
   geometry_msgs::Twist cmd_val;
@@ -86,6 +90,7 @@ private:
   std::string takeoff_topic_;
   std::string land_topic_;
   std::string reset_topic_;
+  std::string gt_topic_;    //ground truth
   
   double max_force_;
   double motion_small_noise_;

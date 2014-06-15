@@ -1,3 +1,4 @@
 #!/bin/sh
-pack_path=$(rospack find ardrone_sim)
+pack_path=$(rospack find sjtu_drone)
+export GAZEBO_MODEL_PATH=$pack_path/models:$GAZEBO_MODEL_PATH
 $pack_path/bin/spawn_drone

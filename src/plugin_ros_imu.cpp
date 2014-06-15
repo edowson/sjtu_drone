@@ -107,7 +107,7 @@ void GazeboRosIMU::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   }
   else {
     linkName = _sdf->GetElement("bodyName")->Get<std::string>();
-    link = boost::shared_dynamic_cast<physics::Link>(world->GetEntity(linkName));
+    link = boost::dynamic_pointer_cast<physics::Link>(world->GetEntity(linkName));
   }
 
   // assert that the body by linkName exists
@@ -225,14 +225,14 @@ bool GazeboRosIMU::ServiceCalibrate(std_srvs::Empty::Request &req,
   return true;
 }
 
-bool GazeboRosIMU::SetAccelBiasCallback(ardrone_sim::SetBias::Request &req, ardrone_sim::SetBias::Response &res)
+bool GazeboRosIMU::SetAccelBiasCallback(sjtu_drone::SetBias::Request &req, sjtu_drone::SetBias::Response &res)
 {
   boost::mutex::scoped_lock scoped_lock(lock);
   accelModel.reset(math::Vector3(req.bias.x, req.bias.y, req.bias.z));
   return true;
 }
 
-bool GazeboRosIMU::SetRateBiasCallback(ardrone_sim::SetBias::Request &req, ardrone_sim::SetBias::Response &res)
+bool GazeboRosIMU::SetRateBiasCallback(sjtu_drone::SetBias::Request &req, sjtu_drone::SetBias::Response &res)
 {
   boost::mutex::scoped_lock scoped_lock(lock);
   rateModel.reset(math::Vector3(req.bias.x, req.bias.y, req.bias.z));

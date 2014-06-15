@@ -73,7 +73,7 @@
 
 #include <gazebo/gazebo.hh>
 #include <sensor_model.h>
-#include <ardrone_sim/SetBias.h>
+#include <sjtu_drone/SetBias.h>
 
 
 namespace gazebo
@@ -148,8 +148,8 @@ namespace gazebo
       std::string serviceName;
 
       /// \brief Bias service callbacks
-      bool SetAccelBiasCallback(ardrone_sim::SetBias::Request &req, ardrone_sim::SetBias::Response &res);
-      bool SetRateBiasCallback(ardrone_sim::SetBias::Request &req, ardrone_sim::SetBias::Response &res);
+      bool SetAccelBiasCallback(sjtu_drone::SetBias::Request &req, sjtu_drone::SetBias::Response &res);
+      bool SetRateBiasCallback(sjtu_drone::SetBias::Request &req, sjtu_drone::SetBias::Response &res);
       ros::ServiceServer accelBiasService;
       ros::ServiceServer rateBiasService;
 

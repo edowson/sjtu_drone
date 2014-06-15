@@ -42,6 +42,7 @@ void ARDroneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sd
   land_topic_ = "ardrone/land";
   reset_topic_ = "ardrone/reset";
   posctrl_topic_ = "ardrone/posctrl";
+  gt_topic_ = "ardrone/gt_pose";
   
   if (!_sdf->HasElement("imuTopic"))
     imu_topic_.clear();
@@ -56,7 +57,7 @@ void ARDroneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sd
   }
   else {
     link_name_ = _sdf->GetElement("bodyName")->Get<std::string>();
-    link = boost::shared_dynamic_cast<physics::Link>(world->GetEntity(link_name_));
+    link = boost::dynamic_pointer_cast<physics::Link>(world->GetEntity(link_name_));
   }
 
   if (!link)
@@ -171,6 +172,10 @@ void ARDroneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sd
       boost::bind(&ARDroneSimpleController::ResetCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     reset_subscriber_ = node_handle_->subscribe(ops);
+  }
+  
+  if (!gt_topic_.empty()){
+      pub_gt_ = node_handle_->advertise<geometry_msgs::Pose>("ardrone/gt_pose",1024);    
   }
 
   LoadControllerSettings(_model, _sdf);
@@ -324,6 +329,20 @@ void ARDroneSimpleController::UpdateDynamics(double dt){
       velocity = link->GetWorldLinearVel();
     }
     
+    
+    //publish the ground truth pose of the drone to the ROS topic
+    geometry_msgs::Pose gt_pose;
+    gt_pose.position.x = pose.pos.x;
+    gt_pose.position.y = pose.pos.y;
+    gt_pose.position.z = pose.pos.z;
+    
+    gt_pose.orientation.w = pose.rot.w;
+    gt_pose.orientation.x = pose.rot.x;
+    gt_pose.orientation.y = pose.rot.y;
+    gt_pose.orientation.z = pose.rot.z;
+    
+    pub_gt_.publish(gt_pose);
+            
     math::Vector3 poschange = pose.pos - position;
     position = pose.pos;
     
