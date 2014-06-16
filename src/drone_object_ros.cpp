@@ -3,11 +3,11 @@
 void DroneObjectROS::initROSVars(ros::NodeHandle& node){
     isFlying = false;
     isPosctrl = false;
-    pubTakeOff = node.advertise<std_msgs::Empty>("ardrone/takeoff",1024);
-    pubLand = node.advertise<std_msgs::Empty>("ardrone/land",1024);
-    pubReset = node.advertise<std_msgs::Empty>("ardrone/reset",1024);
-    pubPosCtrl = node.advertise<std_msgs::Bool>("ardrone/posctrl", 1024);
-    pubCmd = node.advertise<geometry_msgs::Twist>("ardrone/cmd_val",1024);    
+    pubTakeOff = node.advertise<std_msgs::Empty>("drone/takeoff",1024);
+    pubLand = node.advertise<std_msgs::Empty>("drone/land",1024);
+    pubReset = node.advertise<std_msgs::Empty>("drone/reset",1024);
+    pubPosCtrl = node.advertise<std_msgs::Bool>("drone/posctrl", 1024);
+    pubCmd = node.advertise<geometry_msgs::Twist>("drone/cmd_val",1024);    
 }
 
 bool DroneObjectROS::takeOff(){

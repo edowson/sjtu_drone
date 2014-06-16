@@ -6,8 +6,7 @@
 	-->
    <plugin name='simple_drone' filename='libplugin_drone.so'>
         <bodyName>base_link</bodyName>
-        <stateTopic>ground_truth/state</stateTopic>
-        <imuTopic>ardrone/imu</imuTopic>
+        <imuTopic>/drone/imu</imuTopic>
         <rollpitchProportionalGain>10.0</rollpitchProportionalGain>
         <rollpitchDifferentialGain>5.0</rollpitchDifferentialGain>
         <rollpitchLimit>0.5</rollpitchLimit>
@@ -37,8 +36,8 @@
 	<alwaysOn>true</alwaysOn>
 	<updateRate>100.0</updateRate>
 	<bodyName>base_link</bodyName>
-	<frameId>ardrone_base_link</frameId>
-	<topicName>/ardrone/imu</topicName>
+	<frameId>drone_base_link</frameId>
+	<topicName>/drone/imu</topicName>
 	<rpyOffsets>0 0 0</rpyOffsets> 
 	<gaussianNoise>0</gaussianNoise> 
 
