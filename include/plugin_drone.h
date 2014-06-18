@@ -27,12 +27,11 @@
 #define EPS 1E-6
 namespace gazebo
 {
-
-class ARDroneSimpleController : public ModelPlugin
+class DroneSimpleController : public ModelPlugin
 {
 public:
-  ARDroneSimpleController();
-  virtual ~ARDroneSimpleController();
+  DroneSimpleController();
+  virtual ~DroneSimpleController();
 
 protected:
   virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);

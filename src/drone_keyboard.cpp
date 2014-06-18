@@ -11,7 +11,7 @@ public:
         setFocusPolicy(Qt::StrongFocus);
     }
     void setdrone(DroneObjectROS& drone){
-        drone = &drone;
+        this->drone = &drone;
     }
 
     void keyPressEvent(QKeyEvent *event){

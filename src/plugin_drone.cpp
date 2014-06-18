@@ -8,7 +8,7 @@
 
 namespace gazebo {
 
-droneSimpleController::droneSimpleController()
+DroneSimpleController::DroneSimpleController()
 { 
   navi_state = LANDED_MODEL;
   m_posCtrl = false;
@@ -16,7 +16,7 @@ droneSimpleController::droneSimpleController()
 
 ////////////////////////////////////////////////////////////////////////////////
 // Destructor
-droneSimpleController::~droneSimpleController()
+DroneSimpleController::~DroneSimpleController()
 {
   event::Events::DisconnectWorldUpdateBegin(updateConnection);
 
@@ -26,7 +26,7 @@ droneSimpleController::~droneSimpleController()
 
 ////////////////////////////////////////////////////////////////////////////////
 // Load the controller
-void droneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
+void DroneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
   std::cout << "The drone plugin is loading!" << std::endl;
   world = _model->GetWorld();
@@ -100,7 +100,7 @@ void droneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   {
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<geometry_msgs::Twist>(
       cmd_normal_topic_, 1,
-      boost::bind(&droneSimpleController::CmdCallback, this, _1),
+      boost::bind(&DroneSimpleController::CmdCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     cmd_subscriber_ = node_handle_->subscribe(ops);
     
@@ -114,7 +114,7 @@ void droneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   {
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Bool>(
       posctrl_topic_, 1,
-      boost::bind(&droneSimpleController::PosCtrlCallback, this, _1),
+      boost::bind(&DroneSimpleController::PosCtrlCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     posctrl_subscriber_ = node_handle_->subscribe(ops);
     
@@ -130,7 +130,7 @@ void droneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   {
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<sensor_msgs::Imu>(
       imu_topic_, 1,
-      boost::bind(&droneSimpleController::ImuCallback, this, _1),
+      boost::bind(&DroneSimpleController::ImuCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     imu_subscriber_ = node_handle_->subscribe(ops);
     
@@ -145,7 +145,7 @@ void droneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   {
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Empty>(
       takeoff_topic_, 1,
-      boost::bind(&droneSimpleController::TakeoffCallback, this, _1),
+      boost::bind(&DroneSimpleController::TakeoffCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     takeoff_subscriber_ = node_handle_->subscribe(ops);
     if( takeoff_subscriber_.getTopic() != "")
@@ -159,7 +159,7 @@ void droneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   {
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Empty>(
       land_topic_, 1,
-      boost::bind(&droneSimpleController::LandCallback, this, _1),
+      boost::bind(&DroneSimpleController::LandCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     land_subscriber_ = node_handle_->subscribe(ops);
   }
@@ -169,7 +169,7 @@ void droneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   {
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Empty>(
       reset_topic_, 1,
-      boost::bind(&droneSimpleController::ResetCallback, this, _1),
+      boost::bind(&DroneSimpleController::ResetCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     reset_subscriber_ = node_handle_->subscribe(ops);
   }
@@ -186,10 +186,10 @@ void droneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   // Listen to the update event. This event is broadcast every
   // simulation iteration.
   updateConnection = event::Events::ConnectWorldUpdateBegin(
-      boost::bind(&droneSimpleController::Update, this));
+      boost::bind(&DroneSimpleController::Update, this));
 }
 
-void droneSimpleController::LoadControllerSettings(physics::ModelPtr _model, sdf::ElementPtr _sdf){
+void DroneSimpleController::LoadControllerSettings(physics::ModelPtr _model, sdf::ElementPtr _sdf){
     controllers_.roll.Load(_sdf, "rollpitch");
     controllers_.pitch.Load(_sdf, "rollpitch");
     controllers_.yaw.Load(_sdf, "yaw");
@@ -205,7 +205,7 @@ void droneSimpleController::LoadControllerSettings(physics::ModelPtr _model, sdf
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callbacks
-void droneSimpleController::CmdCallback(const geometry_msgs::TwistConstPtr& cmd)
+void DroneSimpleController::CmdCallback(const geometry_msgs::TwistConstPtr& cmd)
 {
   cmd_val = *cmd;
 
@@ -237,11 +237,11 @@ void droneSimpleController::CmdCallback(const geometry_msgs::TwistConstPtr& cmd)
 
 }
 
-void droneSimpleController::PosCtrlCallback(const std_msgs::BoolConstPtr& cmd){
+void DroneSimpleController::PosCtrlCallback(const std_msgs::BoolConstPtr& cmd){
     m_posCtrl = cmd->data;
 }
 
-void droneSimpleController::ImuCallback(const sensor_msgs::ImuConstPtr& imu)
+void DroneSimpleController::ImuCallback(const sensor_msgs::ImuConstPtr& imu)
 {
   //directly read the quternion from the IMU data
   pose.rot.Set(imu->orientation.w, imu->orientation.x, imu->orientation.y, imu->orientation.z);
@@ -249,7 +249,7 @@ void droneSimpleController::ImuCallback(const sensor_msgs::ImuConstPtr& imu)
   angular_velocity = pose.rot.RotateVector(math::Vector3(imu->angular_velocity.x, imu->angular_velocity.y, imu->angular_velocity.z));
 }
 
-void droneSimpleController::TakeoffCallback(const std_msgs::EmptyConstPtr& msg)
+void DroneSimpleController::TakeoffCallback(const std_msgs::EmptyConstPtr& msg)
 {
   if(navi_state == LANDED_MODEL)
   {
@@ -259,7 +259,7 @@ void droneSimpleController::TakeoffCallback(const std_msgs::EmptyConstPtr& msg)
   }
 }
 
-void droneSimpleController::LandCallback(const std_msgs::EmptyConstPtr& msg)
+void DroneSimpleController::LandCallback(const std_msgs::EmptyConstPtr& msg)
 {
   if(navi_state == FLYING_MODEL||navi_state == TAKINGOFF_MODEL)
   {
@@ -270,14 +270,14 @@ void droneSimpleController::LandCallback(const std_msgs::EmptyConstPtr& msg)
 
 }
 
-void droneSimpleController::ResetCallback(const std_msgs::EmptyConstPtr& msg)
+void DroneSimpleController::ResetCallback(const std_msgs::EmptyConstPtr& msg)
 {
   ROS_INFO("%s","\nReset quadrotor!!");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Update the controller
-void droneSimpleController::Update()
+void DroneSimpleController::Update()
 {
     
     // Get new commands/state
@@ -295,7 +295,7 @@ void droneSimpleController::Update()
     last_time = sim_time;   
 }
 
-void droneSimpleController::UpdateState(double dt){
+void DroneSimpleController::UpdateState(double dt){
     if(navi_state == TAKINGOFF_MODEL){
         m_timeAfterCmd += dt;
         if (m_timeAfterCmd > 0.5){
@@ -313,7 +313,7 @@ void droneSimpleController::UpdateState(double dt){
 }
 
 
-void droneSimpleController::UpdateDynamics(double dt){
+void DroneSimpleController::UpdateDynamics(double dt){
     math::Vector3 force, torque;
    
     // Get Pose/Orientation from Gazebo (if no state subscriber is active)
@@ -424,7 +424,7 @@ void droneSimpleController::UpdateDynamics(double dt){
 }
 ////////////////////////////////////////////////////////////////////////////////
 // Reset the controller
-void droneSimpleController::Reset()
+void DroneSimpleController::Reset()
 {
   controllers_.roll.reset();
   controllers_.pitch.reset();
@@ -446,6 +446,6 @@ void droneSimpleController::Reset()
 }
 
 // Register this plugin with the simulator
-GZ_REGISTER_MODEL_PLUGIN(droneSimpleController)
+GZ_REGISTER_MODEL_PLUGIN(DroneSimpleController)
 
 } // namespace gazebo

@@ -105,7 +105,7 @@ target_link_libraries( plugin_ros_imu
 
 
 set_target_properties( plugin_ros_imu
-    PROPERTIES 
+    PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY
     ${PROJECT_SOURCE_DIR}/plugins
 )
