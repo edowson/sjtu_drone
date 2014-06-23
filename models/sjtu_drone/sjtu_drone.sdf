@@ -1,6 +1,6 @@
-<?xml version="1.0"?>
+<?xml version='1.0'?>
 <sdf version='1.4'>
-<model name="sjtu_drone">
+<model name='sjtu_drone'>
    <!-- model plugins should be put in the front of the sensor plugins! 
 	This might be a bug~
 	-->
@@ -32,54 +32,62 @@
         <motionDriftNoiseTime>5.0</motionDriftNoiseTime>
     </plugin>
 
-    <plugin name='ardrone_imu' filename='libplugin_ros_imu.so'>
+   <!-- <plugin name='ardrone_imu' filename='libplugin_ros_imu.so'>
 	<alwaysOn>true</alwaysOn>
 	<updateRate>100.0</updateRate>
 	<bodyName>base_link</bodyName>
 	<frameId>drone_base_link</frameId>
 	<topicName>/drone/imu</topicName>
 	<rpyOffsets>0 0 0</rpyOffsets> 
-	<gaussianNoise>0</gaussianNoise> 
 
 	<accelDrift>0.5 0.5 0.5</accelDrift>
 	<accelOffset>0 0 0</accelOffset>
 
-	<accelGaussianNoise>0.35 0.35 0.3</accelGaussianNoise>
+	<accelGaussianNoise>0.05 0.05 0.05</accelGaussianNoise>
 
 	<rateDrift>0.0 0.0 0.0</rateDrift>
 	<rateOffset>0 0 0</rateOffset>
 
-	<rateGaussianNoise>0.00 0.00 0.00</rateGaussianNoise>
+	<rateGaussianNoise>0.001 0.001 0.001</rateGaussianNoise>
 
 	<headingDrift>0.0</headingDrift>
 	<headingOffset>0.0</headingOffset>
 
 	<headingGaussianNoise>0.00</headingGaussianNoise>
-    </plugin>
+    </plugin> -->
+
+     
 
      <!-- pose of the quadrotor in the world frame -->
      <pose>0 0 0.04 0 0 0</pose>
-      <link name="base_link">
+      <link name='base_link'>
       <inertial>
-        <mass>1.477</mass>
+        <mass>0.477</mass>
 	<pose>0 0 0 0 0 0</pose>
 	<inertia>
-	<ixx>0.01152</ixx>
+<!--	<ixx>0.01152</ixx>
 	<ixy>0</ixy>
 	<ixz>0</ixz>
 	<iyy>0.01152</iyy>
 	<iyz>0</iyz>
-	<izz>0.0218</izz>
+	<izz>0.0218</izz> -->
+	<ixx>1.152</ixx>
+	<ixy>0</ixy>
+	<ixz>0</ixz>
+	<iyy>1.152</iyy>
+	<iyz>0</iyz>
+	<izz>2.18</izz>
+
 	</inertia>
       </inertial>
 
-      <visual name="visual">
+      <visual name='visual'>
         <geometry>
 	  <mesh><uri>file://models/sjtu_drone/quadrotor_4.dae</uri></mesh>
         </geometry>
       </visual>
 
-      <collision name="collision">
+      <collision name='collision'>
         <geometry>
 	<mesh><uri>file://models/sjtu_drone/quadrotor_4.dae</uri></mesh>
         </geometry>
@@ -87,8 +95,29 @@
 
       <gravity>1</gravity>
 
-      <!-- video camera in 15 fps-->
-	<sensor name="mono_camera" type="camera">
+     <!-- IMU sensor in 100fps -->
+	<sensor name='sensor_imu' type='imu'>
+	<always_on> 1 </always_on>
+	<update_rate> 100 </update_rate>
+	<pose> 0 0 0 0 0 0 </pose>
+	<!--<plugin name='ros_imu' filename='libplugin_ros_imu.so'>
+	</plugin> -->
+	<imu>
+		<noise>	
+			<rate>
+				<mean> 0 </mean>
+				<stddev> 0 </stddev>
+			</rate>
+			<accel>
+				<mean> 0 </mean>
+				<stddev> 0.00 </stddev>
+			</accel>
+		</noise>
+	</imu>
+	</sensor>
+
+      <!-- video camera in 15 fps -->
+	<sensor name='mono_camera' type='camera'>
 	<always_on> 1 </always_on>
 	<update_rate> 15 </update_rate>
 	<visualize> true </visualize>
@@ -104,7 +133,7 @@
 			<format>R8G8B8</format>
 		</image>
 	</camera>
-      </sensor>
+	</sensor> 
      </link> 
 </model>
 </sdf>

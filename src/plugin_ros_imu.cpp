@@ -90,7 +90,7 @@ GazeboRosIMU::~GazeboRosIMU()
 // Load the controller
 void GazeboRosIMU::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
-    ROS_INFO("GazeboRosIMU::Load");
+  ROS_INFO("GazeboRosIMU::Load");
   // Get the world name.
   world = _model->GetWorld();
 
@@ -119,7 +119,7 @@ void GazeboRosIMU::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
   double update_rate = 0.0;
   if (_sdf->HasElement("updateRate")) update_rate = _sdf->GetElement("updateRate")->Get<double>();
-  update_period = update_rate > 0.0 ? 1.0/update_rate : 0.0;
+  update_period = update_rate > 0.0 ? 1.0/update_rate : 100.0;
 
   if (!_sdf->HasElement("frameId"))
     frameId = linkName;
@@ -140,14 +140,16 @@ void GazeboRosIMU::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   rateModel.Load(_sdf, "rate");
   headingModel.Load(_sdf, "heading");
 
-  // also use old configuration variables from gazebo_ros_imu
-  if (_sdf->HasElement("gaussianNoise")) {
-    double gaussianNoise = _sdf->GetElement("gaussianNoise")->Get<double>();
-    if (gaussianNoise != 0.0) {
-      accelModel.gaussian_noise = gaussianNoise;
-      rateModel.gaussian_noise  = gaussianNoise;
-    }
-  }
+//  // also use old configuration variables from gazebo_ros_imu
+//  if (_sdf->HasElement("gaussianNoise")) {
+//    double gaussianNoise = _sdf->GetElement("gaussianNoise")->Get<double>();
+//    if (gaussianNoise != 0.0) {
+//        //test
+//        std::cout << "IMU noise:" << gaussianNoise << std::endl;
+//        accelModel.gaussian_noise = gaussianNoise;
+//        rateModel.gaussian_noise  = gaussianNoise;
+//    }
+//  }
 
   if (_sdf->HasElement("rpyOffset")) {
     sdf::Vector3 rpyOffset = _sdf->GetElement("rpyOffset")->Get<sdf::Vector3>();
@@ -156,6 +158,10 @@ void GazeboRosIMU::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     if (headingModel.offset == 0.0 && rpyOffset.z != 0.0) headingModel.offset =  rpyOffset.z;
   }
 
+  //test
+  std::cout << "accel noise:" << accelModel.gaussian_noise.x << " " 
+            << accelModel.gaussian_noise.y << " " << accelModel.gaussian_noise.z << std::endl;
+  
   // fill in constant covariance matrix
   imuMsg.angular_velocity_covariance[0] = rateModel.gaussian_noise.x*rateModel.gaussian_noise.x;
   imuMsg.angular_velocity_covariance[4] = rateModel.gaussian_noise.y*rateModel.gaussian_noise.y;
@@ -261,12 +267,12 @@ void GazeboRosIMU::Update()
   velocity = temp;
 
   // GetRelativeAngularVel() sometimes return nan?
-  //rate  = link->GetRelativeAngularVel(); // get angular rate in body frame
-  math::Quaternion delta = pose.rot - orientation;
-  orientation = pose.rot;
-  rate.x = 2.0 * (-orientation.x * delta.w + orientation.w * delta.x + orientation.z * delta.y - orientation.y * delta.z) / dt;
-  rate.y = 2.0 * (-orientation.y * delta.w - orientation.z * delta.x + orientation.w * delta.y + orientation.x * delta.z) / dt;
-  rate.z = 2.0 * (-orientation.z * delta.w + orientation.y * delta.x - orientation.x * delta.y + orientation.w * delta.z) / dt;
+  rate  = link->GetRelativeAngularVel(); // get angular rate in body frame
+//  math::Quaternion delta = pose.rot - orientation;
+//  orientation = pose.rot;
+//  rate.x = 2.0 * (-orientation.x * delta.w + orientation.w * delta.x + orientation.z * delta.y - orientation.y * delta.z) / dt;
+//  rate.y = 2.0 * (-orientation.y * delta.w - orientation.z * delta.x + orientation.w * delta.y + orientation.x * delta.z) / dt;
+//  rate.z = 2.0 * (-orientation.z * delta.w + orientation.y * delta.x - orientation.x * delta.y + orientation.w * delta.z) / dt;
 
   // get Gravity
   gravity       = world->GetPhysicsEngine()->GetGravity();
@@ -275,9 +281,10 @@ void GazeboRosIMU::Update()
   ROS_DEBUG_NAMED("hector_gazebo_ros_imu", "gravity_world = [%g %g %g]", gravity.x, gravity.y, gravity.z);
 
   // add gravity vector to body acceleration
-  accel = accel - gravity_body;
+  accel = accel  - gravity_body;
 
   // update sensor models (add drifts, noises, offsets)
+  
   accel = accel + accelModel.update(dt);
   rate  = rate  + rateModel.update(dt);
   headingModel.update(dt);

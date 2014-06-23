@@ -28,13 +28,14 @@ DroneSimpleController::~DroneSimpleController()
 // Load the controller
 void DroneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
-  std::cout << "The drone plugin is loading!" << std::endl;
-  world = _model->GetWorld();
 
   if(!ros::isInitialized()){
       ROS_FATAL_STREAM("A ROS node for Gazebo has not been initialized, unable to load plugin. "
         << "Load the Gazebo system plugin 'libgazebo_ros_init.so' in the gazebo_ros package)");
   }
+  
+  world = _model->GetWorld();
+  ROS_INFO("The drone plugin is loading!");
   
   //load parameters
   cmd_normal_topic_ = "drone/cmd_val";

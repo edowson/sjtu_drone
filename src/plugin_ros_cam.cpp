@@ -54,6 +54,8 @@ void GazeboRosCamera::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
       << "Load the Gazebo camera plugin 'libplugin_ros_cam.so' in the gazebo_ros package)");
     return;
   }
+  
+  ROS_INFO("The camera plugin has been loaded!");
 
   CameraPlugin::Load(_parent, _sdf);
   // copying from CameraPlugin into GazeboRosCameraUtils

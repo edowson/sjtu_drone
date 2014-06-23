@@ -90,10 +90,22 @@ set_target_properties( plugin_drone
 )
 
 ################## 3. A IMU sensor plugin for the quadrotor ####################
+#add_library( plugin_ros_imu SHARED
+#    src/plugin_ros_imu.cpp
+#include/plugin_ros_imu.h
+#include/sensor_model.h
+#)
+
+#add_dependencies(plugin_ros_imu plugin_imu_ros_gencpp)
+
+#target_link_libraries( plugin_ros_imu
+#    ${catkin_LIBRARIES}
+#    ${GAZEBO_LIBRARIES}
+#)
+
 add_library( plugin_ros_imu SHARED
-    src/plugin_ros_imu.cpp
-include/plugin_ros_imu.h
-include/sensor_model.h
+    src/plugin_ros_imu_native.cpp
+    include/plugin_ros_imu_native.h
 )
 
 add_dependencies(plugin_ros_imu plugin_imu_ros_gencpp)
@@ -102,7 +114,6 @@ target_link_libraries( plugin_ros_imu
     ${catkin_LIBRARIES}
     ${GAZEBO_LIBRARIES}
 )
-
 
 set_target_properties( plugin_ros_imu
     PROPERTIES
