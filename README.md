@@ -16,3 +16,22 @@ $catkin_make
 ```
 
 Here <catkin_ws> is the path of the catkin work space. Please refer to the [tutorial](http://wiki.ros.org/ROS/Tutorials) about how to create a catkin work space in ROS.
+
+#Run
+The simplest way is calling
+```
+$cd <where you check out the code>
+$export ROS_PACKAGE_PATH=`pwd`:$ROS_PACKAGE_PATH
+$roslaunch sjtu_drone start.launch
+```
+or running the different parts of the package step by step
+
+```
+$cd <where you check out the code>
+$export ROS_PACKAGE_PATH=`pwd`:$ROS_PACKAGE_PATH
+$roscore #to start the ROS server
+$rosrun sjtu_drone start_gzserver <world file> #run the gazebo server and loading the world file
+$rosrun sjtu_drone start_gui #run the gazebo client
+$rosrun sjtu_drone spawn_model # generate a quadrotor in the scene
+$rosrun sjtu_drone drone_keyboard # run the keyboard controller to control the quadrotor
+```
