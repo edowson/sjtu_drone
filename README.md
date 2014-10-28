@@ -5,7 +5,7 @@ sjtu_drone is a quadrotor simulation program developed with ROS + Gazebo. It is 
 # Requirements #
 The package requires ROS indigo version (which means you'd better use Ubuntu 14.04 or Linux Mint 17 or the related later versions). The Gazebo version is suggested to be larger than 3.0. As the default version of Gazebo coming with ROS indigo is 2.0, it is suggested that do not use the full installation but the desktop installation.
 ```
-$sudo apt-get install ros-hydro-desktop 
+$sudo apt-get install ros-hydro-desktop //I think this is outdated, should be sudo apt-get install ros-indigo-desktop
 ```
 #Download and Compiling#
 ```
