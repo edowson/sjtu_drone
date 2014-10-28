@@ -44,6 +44,7 @@ protected:
 private:
   double m_timeAfterCmd;
   bool m_posCtrl;
+  bool m_velMode;
   unsigned int navi_state;
   
   
@@ -63,9 +64,11 @@ private:
   ros::Subscriber takeoff_subscriber_;
   ros::Subscriber land_subscriber_;
   ros::Subscriber reset_subscriber_;
+  ros::Subscriber switch_mode_subscriber_;
   
-  ros::Publisher pub_gt_;   //for publishing ground truth
-  
+  ros::Publisher pub_gt_pose_;   //for publishing ground truth pose
+  ros::Publisher pub_gt_vec_;   //ground truth velocity in the body frame
+  ros::Publisher pub_gt_acc_;   //ground truth acceleration in the body frame
 
 
   geometry_msgs::Twist cmd_val;
@@ -76,6 +79,7 @@ private:
   void TakeoffCallback(const std_msgs::EmptyConstPtr&);
   void LandCallback(const std_msgs::EmptyConstPtr&);
   void ResetCallback(const std_msgs::EmptyConstPtr&);
+  void SwitchModeCallback(const std_msgs::BoolConstPtr&);
  
  
   ros::Time state_stamp;
@@ -84,6 +88,7 @@ private:
 
   std::string link_name_;
   std::string cmd_normal_topic_;
+  std::string switch_mode_topic_;
   std::string posctrl_topic_;
   std::string imu_topic_;
   std::string takeoff_topic_;

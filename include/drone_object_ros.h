@@ -17,12 +17,14 @@ public:
 
     bool isFlying;
     bool isPosctrl;
+    bool isVelMode;
     
     ros::Publisher pubTakeOff;
     ros::Publisher pubLand;
     ros::Publisher pubReset;
     ros::Publisher pubCmd;
     ros::Publisher pubPosCtrl;
+    ros::Publisher pubVelMode;
     
     geometry_msgs::Twist twist_msg;
     
@@ -32,6 +34,7 @@ public:
     bool land();
     bool hover();
     bool posCtrl(bool on);
+    bool velMode(bool on);
     
     // commands for controling ARDrone
     // pitch_lr = left-right tilt		(-1) to right		(+1)

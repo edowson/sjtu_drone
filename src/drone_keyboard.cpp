@@ -49,18 +49,35 @@ public:
             break;
         case 'A':
             //tilt left
-            drone->roll(-0.1f);
+            if( !drone->isVelMode)
+                drone->roll(-0.1f);
+            else
+                drone->pitch(0.7f);
+            
             break;
         case 'D':
             //tilt right
-            drone->roll(0.1f);
+            if( !drone->isVelMode)
+                drone->roll(0.1f);
+            else
+                drone->pitch(-0.7f);
             break;
         case 'W':
             //title front
-            drone->pitch(0.1f);
+            if( !drone->isVelMode)
+                drone->pitch(0.1f);
+            else
+                drone->roll(0.7f);
             break;
         case 'S':
-            drone->pitch(-0.1f);
+            if( !drone->isVelMode)
+                drone->pitch(-0.1f);
+            else
+                drone->roll(-0.7f);
+            break;
+       
+        case 'M':
+            drone->velMode(!drone->isVelMode);
             break;
             
         case 'T':

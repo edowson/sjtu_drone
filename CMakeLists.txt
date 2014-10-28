@@ -23,17 +23,6 @@ if (PKG_CONFIG_FOUND)
     pkg_check_modules(OGRE-Terrain OGRE-Terrain)
 endif()
 
-add_service_files(
-    FILES
-    SetBias.srv
-)
-generate_messages(
-    DEPENDENCIES
-    geometry_msgs
-    std_msgs
-    sensor_msgs
-)
-
 
 link_directories(${GAZEBO_LIBRARY_DIRS} ${Boost_LIBRARIES} ${PROTOBUF_LIBRARIES} ${OGRE_LIBRARY_DIRS})
 include_directories(${OpenCV_INCLUDE_DIR} 
@@ -49,8 +38,6 @@ include_directories(${OpenCV_INCLUDE_DIR}
 ###################################
 catkin_package(
    INCLUDE_DIRS include
-#   LIBRARIES hello_world
-#  CATKIN_DEPENDS other_catkin_pkg
    CATKIN_DEPENDS roscpp rospy image_transport std_msgs sensor_msgs geometry_msgs message_runtime
 )
 
@@ -90,19 +77,6 @@ set_target_properties( plugin_drone
 )
 
 ################## 3. A IMU sensor plugin for the quadrotor ####################
-#add_library( plugin_ros_imu SHARED
-#    src/plugin_ros_imu.cpp
-#include/plugin_ros_imu.h
-#include/sensor_model.h
-#)
-
-#add_dependencies(plugin_ros_imu plugin_imu_ros_gencpp)
-
-#target_link_libraries( plugin_ros_imu
-#    ${catkin_LIBRARIES}
-#    ${GAZEBO_LIBRARIES}
-#)
-
 add_library( plugin_ros_imu SHARED
     src/plugin_ros_imu_native.cpp
     include/plugin_ros_imu_native.h
@@ -160,7 +134,6 @@ qt5_use_modules(drone_keyboard Widgets)
 
 target_link_libraries( drone_keyboard
     ${catkin_LIBRARIES}
-    ${OpenCV_LIBRARIES}
     Qt5::Widgets
 )
 

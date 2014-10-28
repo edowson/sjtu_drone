@@ -14,7 +14,7 @@
         <yawDifferentialGain>1.0</yawDifferentialGain>
         <yawLimit>1.5</yawLimit>
         <velocityXYProportionalGain>5.0</velocityXYProportionalGain>
-        <velocityXYDifferentialGain>1.0</velocityXYDifferentialGain>
+        <velocityXYDifferentialGain>2.3</velocityXYDifferentialGain>
         <velocityXYLimit>2</velocityXYLimit>
         <velocityZProportionalGain>5.0</velocityZProportionalGain>
         <velocityZDifferentialGain>1.0</velocityZDifferentialGain>
@@ -119,10 +119,11 @@
       <!-- video camera in 15 fps -->
 	<sensor name='mono_camera' type='camera'>
 	<always_on> 1 </always_on>
-	<update_rate> 15 </update_rate>
+	<update_rate> 5 </update_rate>
 	<visualize> true </visualize>
-	<pose> 0.2 0 0 0 0 0 </pose>
+	<pose> 0.2 0.0 0.0 0 0 0 </pose>
 	<plugin name='ros_camera' filename='libplugin_ros_cam.so'>
+	<imageTopicName>drone/image_raw</imageTopicName>
 	</plugin> 
 	<camera name='mono_camera'>
 	 	<pose> 0 0 0 0 0 0 </pose>

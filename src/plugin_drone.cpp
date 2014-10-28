@@ -12,6 +12,7 @@ DroneSimpleController::DroneSimpleController()
 { 
   navi_state = LANDED_MODEL;
   m_posCtrl = false;
+  m_velMode = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,6 +45,7 @@ void DroneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   reset_topic_ = "drone/reset";
   posctrl_topic_ = "drone/posctrl";
   gt_topic_ = "drone/gt_pose";
+  switch_mode_topic_ = "/drone/vel_mode";
   
   if (!_sdf->HasElement("imuTopic"))
     imu_topic_.clear();
@@ -176,8 +178,21 @@ void DroneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   }
   
   if (!gt_topic_.empty()){
-      pub_gt_ = node_handle_->advertise<geometry_msgs::Pose>("drone/gt_pose",1024);    
+      pub_gt_pose_ = node_handle_->advertise<geometry_msgs::Pose>("drone/gt_pose",1024);    
   }
+  
+  pub_gt_vec_ = node_handle_->advertise<geometry_msgs::Twist>("drone/gt_vel", 1024);
+  pub_gt_acc_ = node_handle_->advertise<geometry_msgs::Twist>("drone/gt_acc", 1024);
+  
+  
+  if (!switch_mode_topic_.empty()){
+      ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Bool>(
+        switch_mode_topic_, 1,
+        boost::bind(&DroneSimpleController::SwitchModeCallback, this, _1),
+        ros::VoidPtr(), &callback_queue_);
+      switch_mode_subscriber_ = node_handle_->subscribe(ops);
+  }
+      
 
   LoadControllerSettings(_model, _sdf);
   
@@ -276,6 +291,10 @@ void DroneSimpleController::ResetCallback(const std_msgs::EmptyConstPtr& msg)
   ROS_INFO("%s","\nReset quadrotor!!");
 }
 
+void DroneSimpleController::SwitchModeCallback(const std_msgs::BoolConstPtr& msg){
+    m_velMode = msg->data;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Update the controller
 void DroneSimpleController::Update()
@@ -341,8 +360,25 @@ void DroneSimpleController::UpdateDynamics(double dt){
     gt_pose.orientation.x = pose.rot.x;
     gt_pose.orientation.y = pose.rot.y;
     gt_pose.orientation.z = pose.rot.z;
+    pub_gt_pose_.publish(gt_pose);
     
-    pub_gt_.publish(gt_pose);
+    //convert the acceleration and velocity into the body frame
+    math::Vector3 body_vel = pose.rot.RotateVector(velocity);
+    math::Vector3 body_acc = pose.rot.RotateVector(acceleration);
+    
+    //publish the velocity
+    geometry_msgs::Twist tw;
+    tw.linear.x = body_vel.x;
+    tw.linear.y = body_vel.y;
+    tw.linear.z = body_vel.z;
+    pub_gt_vec_.publish(tw);
+    
+    //publish the acceleration
+    tw.linear.x = body_acc.x;
+    tw.linear.y = body_acc.y;
+    tw.linear.z = body_acc.z;
+    pub_gt_acc_.publish(tw);
+    
             
     math::Vector3 poschange = pose.pos - position;
     position = pose.pos;
@@ -388,8 +424,17 @@ void DroneSimpleController::UpdateDynamics(double dt){
           torque.x = inertia.x *  controllers_.roll.update(roll_command, euler.x, angular_velocity_body.x, dt);
           torque.y = inertia.y *  controllers_.pitch.update(pitch_command, euler.y, angular_velocity_body.y, dt);
         }else{
-          torque.x = inertia.x *  controllers_.roll.update(cmd_val.angular.x, euler.x, angular_velocity_body.x, dt);
-          torque.y = inertia.y *  controllers_.pitch.update(cmd_val.angular.y, euler.y, angular_velocity_body.y, dt);
+          //control by velocity
+          if( m_velMode){
+              double pitch_command =  controllers_.velocity_x.update(cmd_val.angular.x, velocity_xy.x, acceleration_xy.x, dt) / gravity;
+              double roll_command  = -controllers_.velocity_y.update(cmd_val.angular.y, velocity_xy.y, acceleration_xy.y, dt) / gravity;
+              torque.x = inertia.x *  controllers_.roll.update(roll_command, euler.x, angular_velocity_body.x, dt);
+              torque.y = inertia.y *  controllers_.pitch.update(pitch_command, euler.y, angular_velocity_body.y, dt);              
+          }else{
+            //control by tilting
+            torque.x = inertia.x *  controllers_.roll.update(cmd_val.angular.x, euler.x, angular_velocity_body.x, dt);
+            torque.y = inertia.y *  controllers_.pitch.update(cmd_val.angular.y, euler.y, angular_velocity_body.y, dt);
+          }
         }
         torque.z = inertia.z *  controllers_.yaw.update(cmd_val.angular.z, angular_velocity.z, 0, dt);
         force.z  = mass      * (controllers_.velocity_z.update(cmd_val.linear.z,  velocity.z, acceleration.z, dt) + load_factor * gravity);
