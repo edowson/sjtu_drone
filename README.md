@@ -1,6 +1,6 @@
 # About sjtu_drone #
 
-sjtu_drone is a quadrotor simulation program developed with ROS + Gazebo. It is used for testing visual SLAM algorithms aiding with different sensors, such as IMU, sonar range finder and laser range finder. Here by 'sjtu', it means Shanghai Jiao Tong University. 
+sjtu_drone is a quadrotor simulation program forked from ['tum_simulator'] (http://wiki.ros.org/tum_simulator) , which is developed with ROS + Gazebo. It is used for testing visual SLAM algorithms aiding with different sensors, such as IMU, sonar range finder and laser range finder. Here by 'sjtu', it means Shanghai Jiao Tong University. Currently, this program is used for testing algorithms for [UAV contest in SJTU](http://mediasoc.sjtu.edu.cn/wordpress)
 
 # Requirements #
 The package requires ROS indigo version (which means you'd better use Ubuntu 14.04 or Linux Mint 17 or the related later versions). The Gazebo version is suggested to be larger than 3.0. As the default version of Gazebo coming with ROS indigo is 2.0, it is suggested that do not use the full installation but the desktop installation.
