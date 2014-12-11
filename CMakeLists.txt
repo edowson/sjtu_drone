@@ -123,8 +123,16 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt5Widgets REQUIRED)
 MESSAGE( STATUS "QT5: " ${Qt5Widgets_INCLUDE_DIRS} )
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
+include_directories(build)
+
+QT5_WRAP_UI(UIS_HDRS src/DialogKeyboard.ui)
+QT5_WRAP_CPP(MOC_CPPS src/DialgoKeyboard.h)
+QT5_ADD_RESOURCES(RESOURCES src/drone_keyboard.qrc)
 
 add_executable( drone_keyboard
+    ${UIS_HDRS}
+    ${RESOURCES}
+    src/DialogKeyboard.cpp
     src/drone_keyboard.cpp
     src/drone_object_ros.cpp
     include/drone_object_ros.h

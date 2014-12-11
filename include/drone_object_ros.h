@@ -6,6 +6,11 @@
 #include <std_msgs/Bool.h>
 #include <geometry_msgs/Twist.h>
 
+/**
+ * @brief A simple class to send the commands to the drone through 
+ * the corresponding topics
+ */
+
 class DroneObjectROS{
 protected:
     DroneObjectROS(){}
