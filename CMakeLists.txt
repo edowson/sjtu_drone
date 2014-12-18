@@ -124,6 +124,8 @@ find_package(Qt5Widgets REQUIRED)
 MESSAGE( STATUS "QT5: " ${Qt5Widgets_INCLUDE_DIRS} )
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
 include_directories(build)
+include_directories(../../build)
+include_directories(../../build/sjtu_drone)
 
 QT5_WRAP_UI(UIS_HDRS src/DialogKeyboard.ui)
 QT5_WRAP_CPP(MOC_CPPS src/DialgoKeyboard.h)
