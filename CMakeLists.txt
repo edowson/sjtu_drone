@@ -168,3 +168,20 @@ set_target_properties( spawn_drone
     RUNTIME_OUTPUT_DIRECTORY
     ${PROJECT_SOURCE_DIR}/bin
 )
+################## 7. A sonar sensor plugin for the quadrotor ####################
+add_library( plugin_ros_sonar SHARED
+    src/plugin_ros_sonar.cpp
+    include/plugin_ros_sonar.h
+)
+
+target_link_libraries( plugin_ros_sonar
+    ${catkin_LIBRARIES}
+    ${GAZEBO_LIBRARIES}
+)
+
+set_target_properties( plugin_ros_sonar
+    PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY
+    ${PROJECT_SOURCE_DIR}/plugins
+)
+

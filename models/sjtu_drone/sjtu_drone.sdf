@@ -84,6 +84,20 @@
 		</noise>
 	</imu>
 	</sensor>
+	<!-- Sonar sensor in 100fps -->
+	<sensor name='sensor_sonar' type='sonar'>
+	<always_on>1</always_on>
+	<visualize>0</visualize>
+	<update_rate>100</update_rate>
+	<pose> 0.5 0 0.3 0 1.570796327 3.141592653 </pose>
+	<plugin name='ros_sonar' filename='libplugin_ros_sonar.so'>
+	</plugin> 
+	<sonar>
+		<min>0</min>
+		<max>5</max>
+        	<radius>1.33974596</radius>
+        </sonar>
+        </sensor>
 
 	<!-- front camera -->
 	<sensor name="front_camera" type="camera">

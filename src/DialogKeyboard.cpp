@@ -42,11 +42,11 @@ void DialogKeyboard::keyPressEvent(QKeyEvent *event){
         break;
     case 'J':
         //turn left
-        drone->yaw(-0.4f);
+        drone->yaw(0.4f);
         break;
     case 'L':
         //turn right
-        drone->yaw(0.4f);
+        drone->yaw(-0.4f);
         break;
     case 'A':
         //tilt left
