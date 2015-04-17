@@ -58,6 +58,7 @@ void RosSonarPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/){
 }*/
 void RosSonarPlugin::onUpdated(){
     //copy data into ros message
+
     sonar_msg_.header.frame_id = "drone_link";
     sonar_msg_.header.stamp.sec = this->sonar_->GetLastUpdateTime().sec;
     sonar_msg_.header.stamp.nsec = this->sonar_->GetLastUpdateTime().nsec;

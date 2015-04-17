@@ -84,6 +84,8 @@
 		</noise>
 	</imu>
 	</sensor>
+
+
 	<!-- Sonar sensor in 100fps -->
 	<sensor name='sensor_sonar' type='sonar'>
 	<always_on>1</always_on>
@@ -154,6 +156,45 @@
 	<imageTopicName>/drone/down_camera/image_raw</imageTopicName>
 	</plugin> 
       </sensor>
+
+
+<!-- %%%%%%%%%%%%%%%%%%  laser sensor  %%%%%%%%%%%%%%%%%%%%%%%%%% -->
+	<sensor name='sensor_laser' type='ray'>
+	<always_on>0</always_on>
+	<visualize>0</visualize>
+	<update_rate>100</update_rate>
+	<pose> 0 0 0.1 0 0 0 </pose>
+	<plugin name='ros_laser' filename='libplugin_ros_laser.so'>
+	</plugin>
+	<ray>
+	  <scan>
+            <horizontal>
+            	<samples>500</samples>
+            	<resolution>1</resolution>
+            	<min_angle>-1.570796</min_angle>
+            	<max_angle>1.570796</max_angle>
+            </horizontal>
+	    <!--<vertical>
+            	<samples>500</samples>
+            	<resolution>1</resolution>
+            	<min_angle>-1.570796</min_angle>
+            	<max_angle>1.570796</max_angle>
+            </vertical>-->
+          </scan>	  
+	  <range>
+          	<min>0.10</min>
+          	<max>500.0</max>
+          	<resolution>0.01</resolution>
+          </range>
+	  <noise>
+          	<type>gaussian</type>
+          	<mean>0.0</mean>
+          	<stddev>0.01</stddev>
+          </noise>
+	</ray>
+	</sensor> 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
+
 
      </link> 
 </model>
