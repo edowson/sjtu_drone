@@ -38,8 +38,8 @@ $rosrun sjtu_drone drone_keyboard # run the keyboard controller to control the q
 
 # Read sensor data from ROS topics #
 ```
-**forward looking camera :**  /drone/front_camera/image_raw
-**downward looking camera:** /drone/down_camera/image_raw
-**sonar data: ** /drone/sonar
-**laser range data:** /drone/laser
+forward looking camera :  /drone/front_camera/image_raw
+downward looking camera: /drone/down_camera/image_raw
+sonar data:  /drone/sonar
+laser range data: /drone/laser
 ```
