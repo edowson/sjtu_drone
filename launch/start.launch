@@ -16,7 +16,6 @@
   <!-- Spawn simulated quadrotor uav -->
   <node name="spawn_model" pkg="sjtu_drone" type="spawn_model" respawn="false"/>
 
-
-   <!-- start keyboard control ui -->
-   <node name="drone_keyboard" pkg="sjtu_drone" type="drone_keyboard" /> 
+  <!-- start keyboard control ui -->
+  <node name="drone_keyboard" pkg="sjtu_drone" type="drone_keyboard" />
 </launch>
