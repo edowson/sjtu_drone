@@ -1,4 +1,102 @@
-build
-bin
-plugins
+# .gitignore
+
+# archive files
+*.bz2
+*.gz
+*.zip
+*.tar
+
+# common
+*.log
+
+# c/c++
+# prerequisites
+*.d
+# compiled object files
 *.o
+*.obj
+*.bc
+*.elf
+*.ll
+*.lo
+*.ko
+*.slo
+# precompiled headers
+*.gch
+*.pch
+# compiled static libraries
+*.a
+*.la
+*.lai
+*.lib
+# compiled dynamic libraries
+*.so
+*.so.*
+*.dll
+*.dylib
+# linker output
+*.ilk
+*.map
+*.exp
+# executables
+*.exe
+*.out
+*.app
+# debug files
+*.dSYM/
+*.idb
+*.pdb
+*.su
+
+# cmake
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+
+# cuda
+*.i
+*.ii
+*.gpu
+*.ptx
+*.cubin
+*.fatbin
+
+# git
+patch/
+
+# jetbrains ide
+*.iml
+.idea/
+
+# jupyter notebook
+.ipynb_checkpoints/
+
+# python byte-compiled, optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# folders
+archive/
+!bin
+bin/*
+build/
+build_isolated/
+devel/
+devel_isolated/
+inbox/
+outbox/
+output/
+plugins/
+
+# inclusions
+!bin/setup.sh
+
+# Operating system files
+.DS_Store
+Thumbs.db
