@@ -13,7 +13,7 @@
   <arg name="paused" default="false"/>
   <arg name="recording" default="false"/>
   <arg name="verbose" default="false"/>
-  <arg name="world_name" default="$(find sjtu_drone)/worlds/garching_kitchen.world"/>
+  <arg name="world_name" default="$(find gazebo_ros)/worlds/empty.world"/>
 
   <!-- set command arguments -->
   <arg unless="$(arg paused)" name="command_arg1" value=""/>
