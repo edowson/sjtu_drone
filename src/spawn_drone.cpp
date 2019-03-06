@@ -2,9 +2,17 @@
 #include <gazebo/transport/transport.hh>
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/gazebo.hh>
+#include <gazebo/gazebo_client.hh>
+
+#include <ignition/math/Inertial.hh>
+#include <ignition/math/MassMatrix3.hh>
+#include <ignition/math/Plane.hh>
+#include <ignition/math/Pose3.hh>
+#include <ignition/math/Vector3.hh>
+
 
 int main(int _argc, char** _argv){
-    gazebo::setupClient(_argc, _argv);
+    gazebo::client::setup(_argc, _argv);
     gazebo::transport::NodePtr node(new gazebo::transport::Node());
     node->Init();
     
@@ -22,8 +30,8 @@ int main(int _argc, char** _argv){
     
     // Pose to initialize the model to
     gazebo::msgs::Set(msg.mutable_pose(),
-               gazebo::math::Pose(gazebo::math::Vector3(0, 0, 1), 
-               gazebo::math::Quaternion(0, 0, 0)));
+               ignition::math::Pose3d (ignition::math::Vector3d(0, 0, 1),ignition::math::Quaterniond(0, 0, 0))
+               );
     
      
     // Send the message

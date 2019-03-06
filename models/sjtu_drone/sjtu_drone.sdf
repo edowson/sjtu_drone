@@ -30,8 +30,7 @@
         <motionSmallNoise>0.05</motionSmallNoise>
         <motionDriftNoise>0.03</motionDriftNoise>
         <motionDriftNoiseTime>5.0</motionDriftNoiseTime>
-    </plugin> 
-    
+    </plugin>
 
      <!-- pose of the quadrotor in the world frame -->
      <pose>0 0 0.04 0 0 0</pose>
@@ -52,13 +51,13 @@
 
       <visual name='visual'>
         <geometry>
-	  <mesh><uri>file://models/sjtu_drone/quadrotor_4.dae</uri></mesh>
+          <mesh><uri>file://models/sjtu_drone/quadrotor_4.dae</uri></mesh>
         </geometry>
       </visual>
 
       <collision name='collision'>
         <geometry>
-	<mesh><uri>file://models/sjtu_drone/quadrotor_4.dae</uri></mesh>
+          <mesh><uri>file://models/sjtu_drone/quadrotor_4.dae</uri></mesh>
         </geometry>
       </collision>
 
@@ -72,7 +71,8 @@
 	<plugin name='ros_imu' filename='libplugin_ros_imu.so'>
 	</plugin> 
 	<imu>
-		<noise>	
+		<noise>
+		    <type>gaussian</type>
 			<rate>
 				<mean> 0 </mean>
 				<stddev> 0 </stddev>

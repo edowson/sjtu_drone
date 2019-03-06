@@ -39,7 +39,7 @@ void DroneSimpleController::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   ROS_INFO("The drone plugin is loading!");
   
   //load parameters
-  cmd_normal_topic_ = "drone/cmd_val";
+  cmd_normal_topic_ = "/cmd_vel";
   takeoff_topic_ = "drone/takeoff";
   land_topic_ = "drone/land";
   reset_topic_ = "drone/reset";

@@ -11,6 +11,5 @@ export GAZEBO_RESOURCE_PATH=$pack_path:/usr/share/gazebo-3.0:/usr/share/gazebo-4
 export GAZEBO_PLUGIN_PATH=$pack_path/plugins:$GAZEBO_PLUGIN_PATH
 
 #start the gazebo server
-gzserver $final --verbose -s libplugin_ros_init.so 
-
+rosrun gazebo_ros gzserver $final
 

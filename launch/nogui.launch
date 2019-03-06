@@ -2,7 +2,7 @@
  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
   <arg name="paused" value="false"/>
   <arg name="use_sim_time" value="true"/>
-  <arg name="gui" value="true"/>
+  <arg name="gui" value="false"/>
   <arg name="headless" value="false"/>
   <arg name="debug" value="false"/>
 

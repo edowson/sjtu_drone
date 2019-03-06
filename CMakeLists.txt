@@ -34,6 +34,7 @@ include_directories(${OpenCV_INCLUDE_DIR}
                     include)
 
 
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 ###################################
 catkin_package(
@@ -201,3 +202,12 @@ set_target_properties( plugin_ros_laser
     LIBRARY_OUTPUT_DIRECTORY
     ${PROJECT_SOURCE_DIR}/plugins
 )
+
+install(DIRECTORY bin
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(DIRECTORY include
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

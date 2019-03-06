@@ -13,7 +13,7 @@ void RosSonarPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/){
     if (!_sensor)
         gzerr << "Invalid sensor pointer.\n";
     //this->imu_ = boost::dynamic_pointer_cast<sensors::ImuSensor>(_sensor);
-    this->sonar_ = boost::dynamic_pointer_cast<sensors::SonarSensor>(_sensor);
+    this->sonar_ = std::dynamic_pointer_cast<sensors::SonarSensor>(_sensor);
     //if (!this->imu_){
     if (!this->sonar_){
         gzerr << "SonarPlugin equires a SonarSensor.\n";

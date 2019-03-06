@@ -1,1 +1,7 @@
-Danping Zou
+Hongrong Huang <huang.hongrong1987@gmail.com>
+Jürgen Sturm <juergen.sturm@in.tum.de>
+Danping Zou / Dannis Zou <dannis.zou@gmail.com>
+Ruben Alves <rubenanapu@hotmail.com>
+Marco Arruda <marco.nc.arruda@gmail.com>
+Arif Rahman <arixrobotics@gmail.com>
+Alberto Ezquerro Baraibar

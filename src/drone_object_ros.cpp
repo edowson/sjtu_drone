@@ -8,7 +8,7 @@ void DroneObjectROS::initROSVars(ros::NodeHandle& node){
     pubLand = node.advertise<std_msgs::Empty>("/drone/land",1024);
     pubReset = node.advertise<std_msgs::Empty>("/drone/reset",1024);
     pubPosCtrl = node.advertise<std_msgs::Bool>("/drone/posctrl", 1024);
-    pubCmd = node.advertise<geometry_msgs::Twist>("/drone/cmd_val",1024); 
+    pubCmd = node.advertise<geometry_msgs::Twist>("/cmd_vel",1024);
     pubVelMode = node.advertise<std_msgs::Bool>("/drone/vel_mode",1024);
 }
 
