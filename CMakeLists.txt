@@ -186,23 +186,6 @@ set_target_properties( plugin_ros_sonar
     ${PROJECT_SOURCE_DIR}/plugins
 )
 
-################## 8. A laser sensor plugin for the quadrotor ####################
-add_library( plugin_ros_laser SHARED
-    src/plugin_ros_laser.cpp
-    include/plugin_ros_laser.h
-)
-
-target_link_libraries( plugin_ros_laser
-    ${catkin_LIBRARIES}
-    ${GAZEBO_LIBRARIES}
-)
-
-set_target_properties( plugin_ros_laser
-    PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY
-    ${PROJECT_SOURCE_DIR}/plugins
-)
-
 install(DIRECTORY bin
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
@@ -210,4 +193,22 @@ install(DIRECTORY include
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(DIRECTORY meshes
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(DIRECTORY models
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(DIRECTORY plugins
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(DIRECTORY scripts
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(DIRECTORY src
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(DIRECTORY worlds
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
