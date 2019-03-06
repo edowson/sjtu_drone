@@ -416,7 +416,7 @@ void DroneSimpleController::UpdateDynamics(double dt){
         }
     }else{
         //normal control
-        if( navi_state == FLYING_MODEL && cmd_val.linear.x < EPS && cmd_val.linear.y < EPS)
+        if( navi_state == FLYING_MODEL)
         {
           //hovering
           double pitch_command =  controllers_.velocity_x.update(cmd_val.linear.x, velocity_xy.x, acceleration_xy.x, dt) / gravity;
