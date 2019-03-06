@@ -8,11 +8,11 @@
   <arg name="headless" value="false"/>
   <arg name="debug" value="false"/>
   <arg name="world_name" default="$(find sjtu_drone)/worlds/contest.world"/>
- 
+
   <!-- start gzserver and load the map -->
   <node name="gazebo" pkg="sjtu_drone" type="start_gzserver" args="$(arg world_name)" respawn="false"/>
-	
+
   <!-- Spawn simulated quadrotor uav -->
-  <node name="spawn_model" pkg="sjtu_drone" type="spawn_model" respawn="false"/>
-   
+  <node name="spawn_drone" pkg="sjtu_drone" type="spawn_drone" respawn="false"/>
+
 </launch>

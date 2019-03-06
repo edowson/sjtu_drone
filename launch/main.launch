@@ -16,6 +16,6 @@
   <node name="gui" pkg="sjtu_drone" type="start_gui" args="$(arg world_name)" respawn="false"/>
 
   <!-- Spawn simulated quadrotor uav -->
-  <node name="spawn_model" pkg="sjtu_drone" type="spawn_model" respawn="false"/>
+  <node name="spawn_drone" pkg="sjtu_drone" type="spawn_drone" respawn="false"/>
 
 </launch>

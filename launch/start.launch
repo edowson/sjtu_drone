@@ -7,16 +7,21 @@
   <arg name="headless" value="false"/>
   <arg name="debug" value="false"/>
   <arg name="world_name" value="$(find sjtu_drone)/worlds/garching_kitchen.world"/>
- 
+
   <!-- start gzserver and load the map -->
   <node name="gazebo" pkg="sjtu_drone" type="start_gzserver" args="$(arg world_name)" respawn="false"/>
 
   <!-- start gzclient -->
   <node name="gui" pkg="sjtu_drone" type="start_gui" args="$(arg world_name)" respawn="false"/>
-	
+
   <!-- Spawn simulated quadrotor uav -->
-  <node name="spawn_model" pkg="sjtu_drone" type="spawn_model" respawn="false"/>
+  <node name="spawn_drone" pkg="sjtu_drone" type="spawn_drone" respawn="false"/>
 
   <!-- start keyboard control ui -->
-  <node name="drone_keyboard" pkg="sjtu_drone" type="drone_keyboard" />
+  <node name="drone_keyboard" pkg="sjtu_drone" type="drone_keyboard" respawn="false"/>
+
+  <!-- start image view ui -->
+  <node name="front_image_view" pkg="image_view" type="image_view" args="image:=/drone/front_camera/image_raw" respawn="false"/>
+  <node name="down_image_view" pkg="image_view" type="image_view" args="image:=/drone/down_camera/image_raw" respawn="false"/>
+
 </launch>
