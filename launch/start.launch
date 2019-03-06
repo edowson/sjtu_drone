@@ -1,12 +1,29 @@
 <?xml version="1.0"?>
 <launch>
- <!-- these are the arguments you can pass this launch file, for example paused:=true -->
-  <arg name="paused" value="false"/>
-  <arg name="use_sim_time" value="true"/>
-  <arg name="gui" value="true"/>
-  <arg name="headless" value="false"/>
-  <arg name="debug" value="false"/>
-  <arg name="world_name" value="$(find sjtu_drone)/worlds/garching_kitchen.world"/>
+
+  <!-- set environemnt variables -->
+  <env name="GAZEBO_MODEL_PATH" value="$(find sjtu_drone)/models:$GAZEBO_MODEL_PATH"/>
+  <env name="GAZEBO_RESOURCE_PATH" value="$(find sjtu_drone):$GAZEBO_RESOURCE_PATH"/>
+
+  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+  <arg name="use_sim_time" default="true"/>
+  <arg name="debug" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="paused" default="false"/>
+  <arg name="recording" default="false"/>
+  <arg name="verbose" default="false"/>
+  <arg name="world_name" default="$(find sjtu_drone)/worlds/garching_kitchen.world"/>
+
+  <!-- set command arguments -->
+  <arg unless="$(arg paused)" name="command_arg1" value=""/>
+  <arg if="$(arg paused)" name="command_arg1" value="-u"/>
+  <arg unless="$(arg recording)" name="command_arg2" value=""/>
+  <arg if="$(arg recording)" name="command_arg2" value="-r"/>
+  <arg unless="$(arg verbose)" name="command_arg3" value=""/>
+  <arg if="$(arg verbose)" name="command_arg3" value="--verbose"/>
+  <arg unless="$(arg debug)" name="script_type" value="gzserver"/>
+  <arg if="$(arg debug)" name="script_type" value="debug"/>
 
   <!-- start gzserver and load the map -->
   <node name="gazebo" pkg="sjtu_drone" type="start_gzserver" args="$(arg world_name)" respawn="false"/>
