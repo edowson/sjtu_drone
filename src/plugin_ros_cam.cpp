@@ -54,7 +54,7 @@ void GazeboRosCamera::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
       << "Load the Gazebo camera plugin 'libplugin_ros_cam.so' in the gazebo_ros package)");
     return;
   }
-  
+
   ROS_INFO("The camera plugin has been loaded!");
 
   CameraPlugin::Load(_parent, _sdf);
@@ -75,7 +75,7 @@ void GazeboRosCamera::OnNewFrame(const unsigned char *_image,
     unsigned int _width, unsigned int _height, unsigned int _depth,
     const std::string &_format)
 {
-  this->sensor_update_time_ = this->parentSensor_->GetLastUpdateTime();
+  this->sensor_update_time_ = this->parentSensor_->LastUpdateTime();
 
   if (!this->parentSensor->IsActive())
   {

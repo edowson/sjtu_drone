@@ -32,7 +32,7 @@ void RosSonarPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/){
 }
 
 /*void RosSonarPlugin::onUpdated(){
-   msgs::IMU imu_msg =   this->imu_->GetImuMessage();
+   msgs::IMU imu_msg =   this->imu_->ImuMessage();
 
    //copy data into ros message
    imu_msg_.header.frame_id = "drone_link";
@@ -60,12 +60,12 @@ void RosSonarPlugin::onUpdated(){
     //copy data into ros message
 
     sonar_msg_.header.frame_id = "drone_link";
-    sonar_msg_.header.stamp.sec = this->sonar_->GetLastUpdateTime().sec;
-    sonar_msg_.header.stamp.nsec = this->sonar_->GetLastUpdateTime().nsec;
+    sonar_msg_.header.stamp.sec = this->sonar_->LastUpdateTime().sec;
+    sonar_msg_.header.stamp.nsec = this->sonar_->LastUpdateTime().nsec;
 
-    sonar_msg_.range = this->sonar_->GetRange();
-    sonar_msg_.max_range = this->sonar_->GetRangeMax();
-    sonar_msg_.min_range = this->sonar_->GetRangeMin();
+    sonar_msg_.range = this->sonar_->Range();
+    sonar_msg_.max_range = this->sonar_->RangeMax();
+    sonar_msg_.min_range = this->sonar_->RangeMin();
 
     pub_.publish(sonar_msg_);
 }
